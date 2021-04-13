@@ -109,3 +109,16 @@ Forking a repository is usually done via the github UI, due to the fact that fro
 
 Making a fork 
 ```git clone https://github.com/YOUR-USERNAME/Spoon-Knife```
+
+
+
+## Git Submodules 
+Git Submodules are files in a git repository that also have a .git inside them - git will consider these as submodules (sort of like nested git repositories).
+When uploaded to a service like github, these can be represented as a directory symbol that has a arrow on them (but frustraitingly no link to the repository)
+
+Removing submodules:
+```
+git rm --cached <directory>
+git add <directory>
+```
+You can check that the files have been added traditionally using `git status`

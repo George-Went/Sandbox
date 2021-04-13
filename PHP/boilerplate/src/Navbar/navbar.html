@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8"> <!-- defienes character types  -->
+    <title>Title</title> <!-- Specifices a title for a document-->
+    <link rel="stylesheet" href="navbar.css"> <!-- link to the css stylesheet--> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+
+   <div class="topnav" id="myTopnav">
+      <a href="#home" class="active">One</a>
+      <a href="#news">Two</a>
+      <a href="#contact">Three</a>
+      <a href="#about">Four</a>
+      <a href="javascript:void(0);" class="icon" onclick="navbarFunction()">
+      <i class="fa fa-bars"></i>
+      </a>
+   </div>
+
+   
+
+
+
+
+   </body>
+</html>
+
+
+<script>/* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
+   function navbarFunction() {
+     var x = document.getElementById("myTopnav");
+     if (x.className === "topnav") {
+       x.className += " responsive";
+     } else {
+       x.className = "topnav";
+     }
+   } 
+</script>
