@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title></title>
+    <style type="text/css">
+      .color-red {color: red}
+    </style>
+  </head>
+  <body>
+    <!-- Vue Binds to objects under the div "root"  -->
+    <div id="root">
+      <!-- The  -->
+      <button v-bind:title="title">Hover Over Me</button>
+      <!-- We can also use the shorthand  -->
+      <button :title="title">Shorthand</button>
+      
+      <!-- This class is now bound dynamically -->
+      <h1 :class="className">Text</h1>
+
+      <!-- On click, this button executes a method that switches a parameter -->
+      <button :class="{ 'is-loading' : isLoading}" @click="toggleClass">Click Me</button> 
+  </body>
+</html>
+
+<script src="https://unpkg.com/vue@2.1.3/dist/vue.js"></script>
+
+<script>
+  var app = new Vue({
+    el: "#root",
+
+    data: {
+      title: "Title is being bound - it is set by the javascript",
+      className: "color-red",
+      isLoading: true
+    },
+    methods: {
+     toggleClass() {
+        this.isLoading = true;
+     }
+    },
+
+  });
+</script>
