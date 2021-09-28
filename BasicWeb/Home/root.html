@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8"> <!-- defienes character types  -->
+    <title>Title</title> <!-- Specifices a title for a document-->
+    <link rel="stylesheet" href="root.css"> <!-- link to the css stylesheet--> 
+  </head>
+  <body style="height: 500px">
+ 
+      <div id="header">
+         <h1>Header</h1>
+      </div>
+
+         
+      
+      <div class="navbar">
+         <h2>Navbar</h2>
+         <a href="#">
+            Link1         
+         </a>
+         <a href="#">Link2</a>
+         <a href="#">Link3</a>
+         <a href="#">Link4</a>
+         <a class="navLink">
+            hekkki
+             <div class="navbarFlourish"></div>
+         </a>       
+      </div>
+      <div class="row">
+         <h2>row</h2>
+
+         <div class="sidebar">
+            <h2>Side Content</h2>
+         </div>
+
+         <div class="main">
+            
+         </div>
+      </div>
+      <div class="footer">
+         <h2>Footer</h2>
+      </div> 
+   </body>
+</html>
+
+<!-- External Js scripts go here -->
+<script>
+   function myFunction() {
+      var x = document.getElementById("navbarFunc");
+      if (x.className === "navbar") {
+         x.className += " responsive";
+      } else {
+         x.className = "navbar";
+      }
+   }
+</script>

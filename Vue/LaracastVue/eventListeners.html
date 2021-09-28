@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title></title>
+  </head>
+  <body>
+    <!-- Vue Binds to objects under the div "root"  -->
+    <div id="root">
+      <ul>
+        <li v-for="name in names" v-text="name"></li>
+      </ul>
+
+      <input id="input" type="text" v-model="newName" />
+      <button v-on:click="addName">Add Name</button>
+
+      <!-- We can also use the @ symbol -->
+      <button @click="counter += 1">Add 1</button>
+      <p>The button above has been clicked {{ counter }} times.</p>
+    </div>
+  </body>
+</html>
+
+<script src="https://unpkg.com/vue@2.1.3/dist/vue.js"></script>
+
+<script>
+  var app = new Vue({
+    el: "#root",
+
+    data: {
+      newName: "",
+      names: ["Joe", "Mary", "Jane", "Jack"],
+      counter: 0,
+    },
+    methods: {
+      addName() {
+        // add newName value to the end of the array
+        this.names.push(this.newName);
+        // Clears the input
+        this.newName = "";
+      },
+    },
+    // mounted() {
+    //   document.querySelector("#button").addEventListener("click", () => {
+    //     let name = document.querySelector("#input");
+    //     app.names.push(name.value);
+    //     name.value = "";
+    //   });
+    // },
+  });
+</script>
