@@ -1,6 +1,6 @@
 from flaskblog import db
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
+
 
 
 # User Models
@@ -38,18 +38,3 @@ def __repr__(self):
     return f"Post('{self.title}', '{self.date_posted}')"
 
 
-## fake database of blog posts is actually a python dictionary
-posts = [
-    {
-        "author": "george",
-        "title": "hello world",
-        "content": "first blog post",
-        "date_posted": "2021",
-    },
-    {
-        "author": "homer",
-        "title": "doh",
-        "content": "eat my shorts",
-        "date_posted": "1990",
-    },
-]
