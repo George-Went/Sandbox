@@ -1,25 +1,21 @@
-from flaskblog import db
 from datetime import datetime
+from flaskblog import db, login_manager
+from flask_login import UserMixin
 
-
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 # User Models
-class User(db.Model):
+class User(db.Model, UserMixin):  # we can import UserMixin from the flask-login classes 
     id = db.Column(db.Integer, primary_key=True)  # id is a primary key
-    username = db.Column(
-        db.String(20), unique=True, nullable=False
-    )  # username has to be: 20 chars, unique, not null
+    username = db.Column(db.String(20), unique=True, nullable=False)  # username has to be: 20 chars, unique, not null
     email = db.Column(db.String(120), unique=True, nullable=False)
-    image_file = db.Column(
-        db.String(20), nullable=False, default="default.jpg"
-    )  # default value
+    image_file = db.Column(db.String(20), nullable=False, default="default.jpg")  # default value
     password = db.Column(db.String(60), nullable=False)
-    posts = db.relationship(
-        "Post", backref="author", lazy=True
-    )  # the lazy argument means that sql aclehmy will load the data from the db one object at a time
+    posts = db.relationship("Post", backref="author", lazy=True)  # the lazy argument means that sql aclehmy will load the data from the db one object at a time
 
-    def __repr__(
-        self,
+    def __repr__(self,
     ):  # this is how our object is printed when someone requets the object
         return f"User('{self.username}', '{self.email}'"
 
@@ -37,4 +33,5 @@ class Post(db.Model):
 def __repr__(self):
     return f"Post('{self.title}', '{self.date_posted}')"
 
-
+# Generates sqlite database from tables 
+db.create_all()
