@@ -32,9 +32,9 @@ class Post(db.Model):
     user_id = db.Column( db.Integer, db.ForeignKey("user.id"), nullable=False
     )  # model knows that user_id is a foreign key
 
+    def __repr__(self):
+        return f"Post('{self.title}', '{self.date_posted}')"
 
-def __repr__(self):
-    return f"Post('{self.title}', '{self.date_posted}')"
 
 
 ## fake database of blog posts is actually a python dictionary

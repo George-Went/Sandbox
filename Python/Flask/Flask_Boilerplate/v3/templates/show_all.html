@@ -10,23 +10,23 @@
     <hr />
     {%- for message in get_flashed_messages() %} {{ message }} {%- endfor %}
 
-    <h3>Students (<a href="{{ url_for('new') }}">Add Student </a>)</h3>
+    <h3>Persons (<a href="{{ url_for('show_all') }}">Add Person </a>)</h3>
 
     <table>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>City</th>
-          <th>Address</th>
+          <th>ID</th>
+          <th>User</th>
+          <th>Email</th>
         </tr>
       </thead>
 
       <tbody>
-        {% for student in students %}
+        {% for person in persons %}
         <tr>
-          <td>{{ student.name }}</td>
-          <td>{{ student.city }}</td>
-          <td>{{ student.addr }}</td>
+          <td>{{ person.id }}</td>
+          <td>{{ person.user }}</td>
+          <td>{{ person.email }}</td>
         </tr>
         {% endfor %}
       </tbody>

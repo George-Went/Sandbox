@@ -1,3 +1,5 @@
+## Ref: https://riptutorial.com/sqlalchemy/example/16161/a-minimal-application
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 

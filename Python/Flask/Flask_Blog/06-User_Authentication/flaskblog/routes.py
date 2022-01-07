@@ -24,7 +24,7 @@ posts = [
 
 @app.route("/")  # Root page of the website
 def root():
-    return "hello!"
+    return "<a href='http://localhost:5000/home'>Go to Home Page</a>"
 
 
 @app.route("/home")  # Root page of the website
@@ -39,7 +39,11 @@ def about():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    form = RegistrationForm()
+    ## Returns user to home page if they are already logged in 
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
+    form = RegistrationForm() # use the registration form from 
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")  # Create Hashed Password
         user = User(username=form.username.data, email=form.email.data, password=hashed_password)  # define a user as a object consisting of the form entries and our newely generated hashed password
@@ -52,6 +56,8 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first() # check if a user == User in our database by checking emails
@@ -62,3 +68,13 @@ def login():
         else:
             flash("Login Unsuccessful. Please check username and password", "danger") ## red box that appears up top 
     return render_template("login.html", title="Login", form=form)
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
+
+@app.route("/account")
+def account():
+    return render_template('account.html', title='Account')
