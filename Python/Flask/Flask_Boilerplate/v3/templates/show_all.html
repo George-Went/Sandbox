@@ -10,23 +10,25 @@
     <hr />
     {%- for message in get_flashed_messages() %} {{ message }} {%- endfor %}
 
-    <h3>Persons (<a href="{{ url_for('show_all') }}">Add Person </a>)</h3>
+    <h3>Users (<a href="{{ url_for('show_all') }}">Add user </a>)</h3>
 
     <table>
       <thead>
         <tr>
           <th>ID</th>
-          <th>User</th>
-          <th>Email</th>
+          <th>Name</th>
+          <th>Location</th>
+          <th>Date Created</th>
         </tr>
       </thead>
 
       <tbody>
-        {% for person in persons %}
+        {% for user in users %}
         <tr>
-          <td>{{ person.id }}</td>
-          <td>{{ person.user }}</td>
-          <td>{{ person.email }}</td>
+          <td>{{ user.id }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.location }}</td>
+          <td>{{ user.date_created }}</td>
         </tr>
         {% endfor %}
       </tbody>

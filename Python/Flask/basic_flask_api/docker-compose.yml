@@ -13,10 +13,10 @@ services:
     volumes:
       # File that the database data will be stored in on the local system 
       # copys sql script from "create_tables.sql"
-      - ./create_table.sql:/docker-entrypoint-initdb.d/create_tables.sql 
+      # - ./create_table.sql:/docker-entrypoint-initdb.d/create_tables.sql 
       # copy the sql script to create tables
       # - ./fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
-      - ./postgres-data:/var/lib/postgresql/data
+      # - ./postgres-data:/var/lib/postgresql/data
 
 
   # Each service is a docker container
