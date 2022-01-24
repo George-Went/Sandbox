@@ -1,27 +1,12 @@
 import os # allows picture saving
-import secrets # allow us to randomise variables
+import secrets
+from PIL import Image
 from flask import render_template, flash, redirect, url_for, flash, redirect, request
 from wtforms.validators import Email
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm,  PostForm
 from flaskblog.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
-
-## fake database of blog posts is actually a python dictionary
-posts = [
-    {
-        "author": "george",
-        "title": "hello world",
-        "content": "first blog post",
-        "date_posted": "2021",
-    },
-    {
-        "author": "homer",
-        "title": "doh",
-        "content": "eat my shorts",
-        "date_posted": "1990",
-    },
-]
 
 
 @app.route("/")  # Root page of the website
@@ -31,6 +16,7 @@ def root():
 
 @app.route("/home")  # Root page of the website
 def home():
+    posts = Post.query.all()
     return render_template("home.html", posts=posts)
 
 
@@ -79,11 +65,18 @@ def logout():
 # route inside /account for saving a picture
 def save_picture(form_picture):
     # we can save the picture as a random file name rather than the file name the user wants 
-    random_hex = secrets.toekn_hex(8)
-    filename, f_ext = os.path.splitext(form_picture.filename)
-    picture_filename = random_hex + f_ext
+    print("saving picture")
+    random_hex = secrets.token_hex(8)
+    filename, filename_ext = os.path.splitext(form_picture.filename)
+    picture_filename = random_hex + filename_ext
+    print(picture_filename)
     picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_filename) # create the file location for the picture to be stored in
-    form_picture.save(picture_path)
+    ## form_picture.save(picture_path)
+
+    output_size = (125, 125)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
 
     return picture_filename
     ## We can also resize the images using pillow https://youtu.be/803Ei2Sq-Zs?t=2208
@@ -108,3 +101,23 @@ def account():
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file = image_file, form=form)
+
+@app.route("/post/new", methods=['GET', 'POST'])
+@login_required
+def new_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(title=form.title.data, content=form.content.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash("Post has been created", 'success')
+        return redirect(url_for('home'))
+    return render_template('create_post.html', title='New Post',form=form)
+
+@app.route("/post/<int:post_id>")
+def post(post_id):
+    post=Post.query.get_or_404(post_id)
+    return render_template('post.html', title='post.title', post=post)
+
+
+

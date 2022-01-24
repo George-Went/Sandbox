@@ -79,9 +79,11 @@ def logout():
 # route inside /account for saving a picture
 def save_picture(form_picture):
     # we can save the picture as a random file name rather than the file name the user wants 
-    random_hex = secrets.toekn_hex(8)
-    filename, f_ext = os.path.splitext(form_picture.filename)
-    picture_filename = random_hex + f_ext
+    print("saving picture")
+    random_hex = secrets.token_hex(8)
+    filename, filename_ext = os.path.splitext(form_picture.filename)
+    picture_filename = random_hex + filename_ext
+    print(picture_filename)
     picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_filename) # create the file location for the picture to be stored in
     form_picture.save(picture_path)
 
