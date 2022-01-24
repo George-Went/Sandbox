@@ -88,4 +88,41 @@ def addGroup(self,group_id):
     return self.response(200, result=result)
 
 
+@app.route("/alternate1", methods=["GET"])
+#@protect()
+def get_groups(self):  
 
+    from app import db
+    
+    result = []
+
+    # Create sqlalchemy query
+    groups = db.session.query(Group).all() 
+
+    for group in groups:
+        result.append(group.name)
+    
+
+    # return response code
+    return self.response(200, result=result)
+
+
+@app.route("/alternate2", methods=["GET"])
+#@protect()
+def get_groups(self):  
+
+    from app import db
+    
+    # Create sqlalchemy query
+    groups = db.session.query(Group).all() 
+
+    # for group in groups:
+    #     print(group.id)
+    #     print(group.name)
+    result = [
+        {"id": group.id, "name": group.name}
+        for group in groups
+    ]
+
+    # return response code
+    return self.response(200, result=result)
