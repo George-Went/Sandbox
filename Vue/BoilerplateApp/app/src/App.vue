@@ -34,7 +34,6 @@ export default {
 
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 @import "../node_modules/bootstrap-vue/dist/bootstrap-vue.css";
-@import "./assets/scss/variables.scss";
 /*  Bootstrap and its default variables */
 @import "../node_modules/bootstrap/scss/bootstrap";
 /*  BootstrapVue and its default variables */
