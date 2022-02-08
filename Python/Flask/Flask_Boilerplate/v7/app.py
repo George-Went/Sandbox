@@ -1,9 +1,12 @@
 from flask import Flask, request
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from app import db
+
 
 DEBUG = True
 app = Flask(__name__)
+
 ## generating a "fake" database 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///boilerplate.db"
@@ -11,12 +14,10 @@ app.config["SECRET_KEY"] = "random string"
 
 db = SQLAlchemy(app)
 
+#Generating Models 
 class Groups(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')),
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'))
-
-
-from app import db
 
 
 @app.route("/", methods=["GET"])
@@ -25,7 +26,7 @@ def get_groups(self):
 
     
 
-    groups = db.session.query(Group).all() 
+    groups = db.session.query(Groups).all() 
 
     return self.response(200, result=groups)
 
@@ -39,7 +40,7 @@ def addGroup(self):
 
     data = request.get_json()
     
-    new_group = Group(name = data["name"])
+    new_group = Groups(name = data["name"])
     db.session.add(new_group)
     db.session.commit()
 
@@ -50,11 +51,9 @@ def addGroup(self):
 # @protect()   
 def addGroup(self):
     
- 
-
     data = request.get_json()
     
-    new_group = Group(name = data["name"])
+    new_group = Groups(name = data["name"])
     db.session.delete(new_group)
     db.session.commit()
 

@@ -27,9 +27,9 @@ const routes = [
     component: Profile,
   },
   {
-      path: "/tables",
-      name: "Tables",
-      component: Table,
+    path: "/tables",
+    name: "Tables",
+    component: Table,
   }
 ];
 

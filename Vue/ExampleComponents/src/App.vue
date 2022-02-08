@@ -4,9 +4,9 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
       <!-- <router-link to="/profile">Profile</router-link> | -->
-      <!-- you can pass parameters to the other component -->
+      <!-- you can pass parameters to the other component (see params in web console) -->
       <router-link :to="{ name: 'Profile', params: {id: '1234'} }">Profile</router-link> |
-      <router-link to="/table">Table</router-link> 
+      <router-link to="/tables">Tables</router-link> 
     </div>
     <router-view />
   </div>
