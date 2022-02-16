@@ -1,8 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
-import Profile from "../views/Profile.vue";
+// import Profile from "../views/Profile.vue";
 import Table from "../views/Tables.vue";
+import Axios from "../views/Axios.vue";
 
 Vue.use(VueRouter);
 
@@ -21,15 +22,20 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue"),
   },
-  {
-    path: "/profile",
-    name: "Profile",
-    component: Profile,
-  },
+//   {
+//     path: "/profile",
+//     name: "Profile",
+//     component: Profile,
+//   },
   {
     path: "/tables",
     name: "Tables",
     component: Table,
+  },
+  {
+    path: "/axios",
+    name: "Axios",
+    component: Axios,
   }
 ];
 

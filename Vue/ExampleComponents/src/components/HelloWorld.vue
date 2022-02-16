@@ -16,7 +16,7 @@
 export default {
   name: "HelloWorld",
   props: {
-    msg: String,
+    msg: String, // Props are variables that can be passed down from parent components
   },
 };
 </script>

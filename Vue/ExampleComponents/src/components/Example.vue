@@ -9,7 +9,7 @@
 <script>
 // import statements go here
 export default {
-    name: "", // name of component for use in vue devtools
+    name: "Example", // name of component for use in vue devtools
     components: {
         // register any vue or javascript object here
     },
