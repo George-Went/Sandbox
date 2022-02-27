@@ -90,13 +90,18 @@ container = client.containers.run("bfirsh/reticulate-splines", detach=True)
 containerObject = {
     "name": "docker_from_object",
     "image": "bfirsh/reticulate-splines",
+    "ports": [{'8080/tcp': 8080}],
     "detach": True
 }
 
 print("creating a container from an object / dictionary")
 print(containerObject["name"])
 client = docker.from_env()
-container = client.containers.run(containerObject["image"], detach=containerObject["detach"])
+container = client.containers.run(containerObject["image"],containerObject["ports"],detach=containerObject["detach"])
+
+
+
+
 
 ## Making sure we dont delete portainer
 client = docker.from_env()

@@ -12,22 +12,23 @@ app.config["SECRET_KEY"] = "random string"
 db = SQLAlchemy(app)
 
 ## Set up our models (which are going to be used to create the tables in the database)
-class OwnerModel(db.model):
+## An Person can have multiple Items (its a shoppping list database)
+class PersonModel(db.model):
     __tablename__ = "owner"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
     
+    def __repr__(self):
+        return f"Post('{self.id}','{self.name}')"
 
-class CarsModel(db.Model):
+class ItemModel(db.Model):
     __tablename__ = "cars"
-
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
-    model = db.Column(db.String())
-    doors = db.Column(db.Integer())
+    person_id = db.coloumn(db.Interger, db.Foreign.key('person.id'),nullable=False)
 
     def __repr__(self):
-        return f"Post('{self.id}','{self.name}','{self.model}','{self.doors}')"
+        return f"Post('{self.id}','{self.name}','{self.person_id}')"
 
 ## Create the database table from the above model
 db.create_all()
@@ -43,25 +44,25 @@ def home():
 ## API URLS
 ## ----------------------------------------------------------
 
-## CREATE CAR 
+## CREATE PERSON 
 @app.route("/create", methods=["POST"])
 def post_cars():
     json_data = request.get_json()
     print(json_data)
 
-    new_car = CarsModel(name = json_data["name"], model = json_data["model"], doors = json_data["doors"])
-    db.session.add(new_car)
+    new_person = PersonModel(name = json_data["name"])
+    db.session.add(new_person)
     db.session.commit()
 
-    response = "new car added" + str(json_data)
+    response = "new person added" + str(json_data)
 
     return response
 
-## READ / VIEW CAR 
-@app.route("/car", methods=["GET"])
-def get_cars():  
+## READ / VIEW PERSON 
+@app.route("/person", methods=["GET"])
+def get_person():  
     
-    cars = db.session.query(CarsModel).all() # Create sqlalchemy query
+    cars = db.session.query(PersonModel).all() # Create sqlalchemy query
     
     result = [
         {"id": car.id, "name": car.name, "model":car.model, "doors":car.doors}
@@ -72,14 +73,14 @@ def get_cars():
     return jsonify(result), 200
 
 
-## UPDATE / EDIT CAR
+## UPDATE / EDIT PERSON
 @app.route("/edit")
 def edit_car():
     json_data = request.get_json()
     print(json_data)
 
     ## bind the id in the json to a specific tuple (row) in the database with the same id
-    car = db.session.query(CarsModel).filter(CarsModel.id == json_data["id"]).first()
+    car = db.session.query (PersonModel).filter(PersonModel.id == json_data["id"]).first()
 
     ## Update the row values
     car.name = json_data["name"]
@@ -100,7 +101,7 @@ def delete_car():
     print(json_data)
 
     ## bind the id in the json to a specific tuple (row) in the database with the same id
-    car = db.session.query(CarsModel).filter(CarsModel.id == json_data["id"]).first()
+    car = db.session.query(PersonModel).filter(PersonModel.id == json_data["id"]).first()
 
     db.session.delete(car)
     db.session.commit()
@@ -116,7 +117,7 @@ def delete_car():
 @app.route("/car2", methods=["GET"])
 def get_cars2():  
     
-    cars = db.session.query(CarsModel).all() # Create sqlalchemy query
+    cars = db.session.query(PersonModel).all() # Create sqlalchemy query
     print(cars)
 
     array = [] ## instansiate empty array 

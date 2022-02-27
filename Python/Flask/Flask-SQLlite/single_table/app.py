@@ -30,7 +30,8 @@ db.create_all()
 @app.route("/", methods=["GET"])
 def home():
     return """<h1>Car Database</h1>
-<p>A Demo API for getting car details from a database.</p>"""
+<p>A Demo API for getting car details from a database.</p>
+<a href='http://localhost:5000/car'>Go to Home Page</a>"""
 
 
 ## ----------------------------------------------------------
@@ -52,7 +53,7 @@ def post_cars():
     return response
 
 ## READ / VIEW CAR 
-@app.route("/car", methods=["GET"])
+@app.route("/read", methods=["GET"])
 def get_cars():  
     
     cars = db.session.query(CarsModel).all() # Create sqlalchemy query
@@ -65,9 +66,23 @@ def get_cars():
     # return response code
     return jsonify(result), 200
 
+## READ / VIEW INDIVIDUAL CAR 
+@app.route("/car/<int:id>", methods=["GET"])
+def get_single_car(id):  
+    
+    #cars = db.session.query(CarsModel).filter(id == id).first() # Create sqlalchemy query
+    cars = db.session.query(CarsModel).filter_by(id=id)
+    result = [
+        {"id": car.id, "name": car.name, "model":car.model, "doors":car.doors}
+        for car in cars
+    ]
+
+    # return response code
+    return jsonify(result), 200
+
 
 ## UPDATE / EDIT CAR
-@app.route("/edit")
+@app.route("/update", methods=["POST"])
 def edit_car():
     json_data = request.get_json()
     print(json_data)
@@ -89,6 +104,7 @@ def edit_car():
     return response
 
 ## DELETE CAR
+@app.route("/delete", methods=["POST"])
 def delete_car():
     json_data = request.get_json()
     print(json_data)
@@ -107,7 +123,7 @@ def delete_car():
 
 ## Alternative methods ------------------------------------------------------------
 ## Post all data (alternative version)
-@app.route("/car2", methods=["GET"])
+@app.route("/read2", methods=["GET"])
 def get_cars2():  
     
     cars = db.session.query(CarsModel).all() # Create sqlalchemy query
