@@ -102,13 +102,14 @@ container = client.containers.run(containerObject["image"],containerObject["port
 
 
 
-
 ## Making sure we dont delete portainer
 client = docker.from_env()
 container = client.containers.get("portainer")
 print("got container: " + str(container))
 print("also known as: " + str(container.name))
 
+#%%
+import docker
 ## MODIFYING EXISTING CONTAINERS
 print("stopping existing containers")
 client = docker.from_env()
@@ -124,3 +125,12 @@ for container in client.containers.list():
 
     
         
+
+# %%
+## Checks if container exists and stops a container based on its name 
+for container in client.containers.list(all=True):
+    if container.name == "Test6":
+        print("Test 6 exists")
+        container.stop()
+
+# %%
