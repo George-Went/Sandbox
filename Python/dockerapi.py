@@ -43,10 +43,12 @@ for image in client.images.list():
 print(client.images.list(name))
 
 ## Getting container names
+#%%
 print("selecting a specific container")
 client = docker.from_env()
 for container in client.containers.list():
-    print(container.name)
+    print("Container: " + container.name)
+# %%
 
 ## Selecting a specific container 
 client = docker.from_env()
@@ -97,7 +99,7 @@ containerObject = {
 print("creating a container from an object / dictionary")
 print(containerObject["name"])
 client = docker.from_env()
-container = client.containers.run(containerObject["image"],containerObject["ports"],detach=containerObject["detach"])
+container = client.containers.run(**containerObject["image"],containerObject["ports"],detach=containerObject["detach"])
 
 
 
@@ -132,5 +134,65 @@ for container in client.containers.list(all=True):
     if container.name == "Test6":
         print("Test 6 exists")
         container.stop()
+    else:
+        print("No container with ")
+# %%
+import docker
+docker_client = docker.from_env()
+
+pretend_JSON = {
+    "name": "Container1",
+    "command": "entrypoint.sh",
+    "entrypoint": "entrypoint.sh",
+    "environment": ["TEST=test"],
+    "image": "alpine",
+    "network": "containerNetwork1",
+    "network_mode": "bridge",
+    "ports": ["8080/tcp","8080"],
+    "restart_policy": "Always",
+    "volumes": [ "/test:/test"]
+}
+
+
+print(pretend_JSON)
+
+# Ports are stored in the database a as a array so we have to turn it into a object
+port_list = []
+for x in pretend_JSON['ports']:
+    port_list.append(x)
+print(port_list)
+
+# Create container object to send back to frontend
+containerObject = {
+    "image": pretend_JSON['image'],
+    "command": pretend_JSON['command'],
+    "environment": pretend_JSON['environment'],
+    "name": pretend_JSON['name'],
+    "network": pretend_JSON['network'],
+    "ports": port_list,
+    "volumes": pretend_JSON['volumes'],
+    "detach": True
+}
+print("CONTAINER OBJ")   
+print(containerObject)
+print(containerObject["ports"])
+
+docker_client.containers.run(containerObject)
+
+## Creating a container from an object / dictionary 
+containerObject = {
+    "name": "docker_from_object",
+    "image": "bfirsh/reticulate-splines",
+    "ports": [{'8080/tcp': 8080}],
+    "detach": True
+}
+
+print("creating a container from an object / dictionary")
+print(containerObject["name"])
+client = docker.from_env()
+container = client.containers.run(containerObject["image"],containerObject["ports"],detach=containerObject["detach"])
+
+
+# %%
 
 # %%
