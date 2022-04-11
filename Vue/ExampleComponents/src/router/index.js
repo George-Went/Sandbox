@@ -1,9 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
-// import Profile from "../views/Profile.vue";
-import Table from "../views/Tables.vue";
-import Axios from "../views/Axios.vue";
+import Home from "../views/Home";
+import Table from "../views/Tables";
+import Axios from "../views/Axios";
+import ComponentBoard from "../views/ComponentBoard";
 
 Vue.use(VueRouter);
 
@@ -14,20 +14,6 @@ const routes = [
     component: Home,
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
-  },
-//   {
-//     path: "/profile",
-//     name: "Profile",
-//     component: Profile,
-//   },
-  {
     path: "/tables",
     name: "Tables",
     component: Table,
@@ -36,6 +22,11 @@ const routes = [
     path: "/axios",
     name: "Axios",
     component: Axios,
+  },
+  {
+    path: "/componentBoard",
+    name: "ComponentBoard",
+    component: ComponentBoard,
   }
 ];
 
@@ -44,5 +35,7 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
 });
+
+
 
 export default router;

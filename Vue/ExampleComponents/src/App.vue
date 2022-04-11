@@ -2,17 +2,15 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
-      <!-- <router-link to="/profile">Profile</router-link> | -->
-      <!-- you can pass parameters to the other component (see params in web console) -->
-      <!-- <router-link :to="{ name: 'Profile', params: {id: '1234'} }">Profile</router-link> | -->
-      <router-link to="/tables">Tables</router-link> |
-      <router-link to="/axios">Axios</router-link>  
+      <router-link to="/tables">xxTables</router-link> |
+      <router-link to="/axios">xxAxios</router-link> |
+      <router-link to="/componentBoard">xxComponentBoard</router-link> 
     </div>
-    <router-view />
+    <router-view></router-view>
   </div>
 </template>
 
+<!-- Styles that will be used on evey view / component-->
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -35,3 +33,4 @@
   color: #42b983;
 }
 </style>
+

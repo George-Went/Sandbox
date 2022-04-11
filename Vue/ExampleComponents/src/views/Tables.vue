@@ -1,14 +1,26 @@
+<!-- Code form bootstrap-vue -->
 <template>
   <div>
-    <h3>Hello</h3>
-    <Example/>
+    <img alt="Cat" src="../assets/meow1.jpg" width="1000" height="600"/>
+    <b-table striped hover :items="items"></b-table>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-// You can also use ..
-// import HelloWorld from "../components/HelloWorld.vue";
+  export default {
+    data() {
+      return {
+        items: [
+          { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
+          { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
+          { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
+          { age: 38, first_name: 'Jami', last_name: 'Carney' }
+        ]
+      }
+    }
+  }
+</script>
+<script>
 import Example from "../components/Example.vue";
 
 export default {
