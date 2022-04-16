@@ -1,5 +1,5 @@
-from application import db
 from datetime import datetime
+from application.database import db
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -8,3 +8,4 @@ class Task(db.Model):
 
     def __repr__(self):
         return f"Post('{self.id}','{self.content}','{self.date_created}')"
+

@@ -554,3 +554,176 @@ When the user goes to curl http://localhost:5000/api/v1/exampleapi/greeting they
 
 
 
+## Notes on API Testing
+
+### API types
+
+There are currently `7` API calls in the crucible software:
+All of the API links can be found under `http://localhost:5000/api/v1` (When running locally)
+
+- `list_running_containers`
+- `list_all_containers`
+- `get_container` (Gets container telemetary data - not the container itself)
+- `run_container`
+- `start_container`
+- `stop_container`
+- `remove_container`
+
+Sending a request to an API:
+
+```python
+def test rest_api_get():
+     response = requests.get(<rest_api_url>)
+     assert response.status_code == 200 ## assert allows us to test if a condition is true or false - in this case we check if the api returns a 200 (success)
+```
+
+## Notes on Thunderclient
+
+Reference: https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client
+
+Thunderclient is a VSCode extension that allows for REST API commands to be sent to a website - We can use it to test our api commands.
+
+Our API commands are currently under:
+
+```
+http://localhost:5000/api/v1
+```
+
+So an example API call for listing all runnning containers would be:
+
+```
+http://localhost:5000/api/v1/docker_api/list_running_containers
+```
+
+The above api request will return with a 200 response (success) and also a json file listing all the currently running docker containers
+
+## Notes on Pytest
+
+Referance: https://www.ontestautomation.com/writing-tests-for-restful-apis-in-python-using-requests-part-1-basic-tests/
+
+We can use dockers API by importing their library
+
+```python
+import docker
+```
+
+We can start with testing a rest api
+
+```python
+def test_rest_api_get():
+    # API url
+    url = "http://localhost:5000/api/v1/docker_api/list_running_containers"
+    response = requests.get(url)
+    ## assert allows us to test if a condition is true or false - in this case we check if the api returns a 200 (success)
+```
+
+This (Should) just return a 200 in the flask logs:
+"GET /api/v1/docker_api/list_running_containers HTTP/1.1" 200 -
+
+Or if run in pytest a green fullstop (in a vscode terminal) like so:
+
+```
+ubuntu@DESKTOP-I1LC6AA:~/crucible/api/src$ pytest -k test_rest_api
+=======================test session starts ================================
+platform linux -- Python 3.8.10, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
+rootdir: /home/ubuntu/crucible/api/src
+collected 9 items / 8 deselected / 1 selected
+
+test/test__docker_api.py            .              [100%]
+=================== 1 passed, 8 deselected in 0.05s =========================
+```
+
+We can also print the logs running when using pytest by using `-s`:
+
+```
+pytest -k test_list_running -s
+```
+
+## Docker API / Docker SDK Python
+
+SDK Referance: https://docker-py.readthedocs.io/en/stable/index.html
+API Referance: https://docs.docker.com/engine/api/sdk/examples/
+
+For the test scripts we referance the docker api as `client`
+
+```python
+client = docker.from_env()
+```
+
+### Running a container
+
+Note that running a container is launching a new container - not starting up an existing one.
+
+```python
+client = docker.from_env() # Default docker socket to connect to
+print(client.containers.run("alpine", ["echo", "hello", "world"]))
+```
+
+### Put it all together
+
+Testing that we can get the metadata for a container
+
+```python
+def test_get_container(get_headers):
+
+    # api query parameters
+    container_details = {
+        "id_name": "crucible_db_1", # name of the container (using db as example container)
+    }
+
+    # craft url with container parameters
+    response = requests.post(
+        URL + "/docker_api/get_container",
+        headers=get_headers,
+        data=json.dumps(container_details),
+    )
+
+    # We now have a url to use: http://localhost:5000/api/v1/docker_api/get_container?id_name=crucible_ab_1
+
+    #Response to above request
+    print ("GET_CONTAINER Reponse:")
+    print(response.text)
+
+    # Test to mkae sure returned json object matches what we expected
+    assert (
+        response.json()["message"]["Name"] == "/crucible_db_1"
+    )
+```
+
+Testing that we can build and run a container
+
+```python
+def test_run_container(get_headers):
+    container_details = {
+        # Suggest changing to a superset container that doesnt exit immediately
+        "image": "alpine:latest",
+        "command": "sleep 10", # container will otherwise complete its task an exit immedielty
+        "name": "docker_api_testing",
+    }
+
+    response = requests.post(
+        URL + "/docker_api/run_container",
+        headers=get_headers,
+        # Collects all json object data about the docker containers and returns it as a string
+        data=json.dumps(container_details),
+    )
+    print ("Reponse:")
+    print(response.text)
+
+    # Checks if the name of the docker container started up is the same as the one specified in "container details"
+    assert (
+        response.json()["message"]["Name"] == "/docker_api_testing"
+    )
+
+    # Checks if the docker container is running
+    test_client = client.containers.get("/docker_api_testing")
+    assert test_client.status == "running"
+
+    # Remove docker container called "docker_api_testing"
+    test_client.stop() # stops "docker_api_testing"
+    test_client.remove() # removes running container
+```
+
+
+
+

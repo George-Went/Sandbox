@@ -1,10 +1,7 @@
 """Initialize Flask app."""
-from flask import Flask
-
-# Application entry point
+# Import application creation functions
 from application import create_app
 
-app = create_app() ## running the application/__init__.py function
-
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    app = create_app()                  ## running the application/__init__.py function
+    app.run(host='0.0.0.0', debug=True) ## App can run on local networks
