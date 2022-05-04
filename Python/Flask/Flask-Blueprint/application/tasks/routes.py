@@ -2,12 +2,16 @@ from flask import Blueprint, render_template, request, redirect
 from application.database import db
 from application.tasks.models import Task
 
+## -----------------------------------------------------------
+## TASKS Blueprint : Found under "/tasks"
+## -----------------------------------------------------------
 
 
 ## Initilising the tasks blueprint
 tasks = Blueprint('tasks_bp', __name__ ,
     template_folder='templates',
-    static_folder='static')
+    static_folder='static',
+    url_prefix='tasks')
 
 ## READ / CREATE TASK
 @tasks.route('/', methods=['POST', 'GET'])
@@ -29,14 +33,15 @@ def index():
         return render_template('index.html', tasks=tasks)
 
 ## DELETE TASK
-@tasks.route('/delete/<int:id>')
+@tasks.route('/delete/<int:id>', methods=['GET', 'POST'])
 def delete(id):
+    print("Delete Request Recived")
     task_to_delete = Task.query.get_or_404(id)
 
     try:
         db.session.delete(task_to_delete)
         db.session.commit()
-        return redirect('/')
+        return redirect('/tasks')
     except:
         return 'There was a problem deleting that task'
 
@@ -50,7 +55,7 @@ def update(id):
 
         try:
             db.session.commit()
-            return redirect('/')
+            return redirect('/tasks/')
         except:
             return 'There was an issue updating your task'
 
