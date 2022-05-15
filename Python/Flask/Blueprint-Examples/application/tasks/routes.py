@@ -1,17 +1,17 @@
 from flask import Blueprint, render_template, request, redirect
 from application.database import db
-from application.tasks.models import Task
+from application.models import Task
 
 ## -----------------------------------------------------------
 ## TASKS Blueprint : Found under "/tasks"
 ## -----------------------------------------------------------
 
 
-## Initilising the tasks blueprint / Registering the Blueprint
-tasks = Blueprint('tasks_bp', __name__ ,
+## Initilising the tasks blueprint
+tasks = Blueprint('task_bp', __name__ ,
     template_folder='templates',
     static_folder='static',
-    url_prefix='tasks')
+    url_prefix='/tasks')
 
 ## READ / CREATE TASK
 @tasks.route('/', methods=['POST', 'GET'])
@@ -20,6 +20,7 @@ def index():
         print("post request recived")
         task_content = request.form['content']
         new_task = Task(content=task_content)
+        print(new_task)
 
         try:
             db.session.add(new_task)

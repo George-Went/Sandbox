@@ -1,9 +1,14 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from application.database import db
-from application.tasks.routes import tasks
+# Import blueprints
+from .tasks.routes import tasks
+from .main.routes import main
+from .models import 
 
+db = SQLAlchemy()
+
+## Factory function to create application
 def create_app():
     app = Flask(__name__)
     app.config['DEBUG'] = True
@@ -15,12 +20,10 @@ def create_app():
     ## Initilise application
     db.init_app(app)    
 
-    with app.app_context(): # Create a instanced varible for 
-        db.create_all()
-    
+
     # Register blueprints
     app.register_blueprint(tasks, url_prefix='/tasks')
-
-
+    app.register_blueprint(main)
+    
     return app 
 

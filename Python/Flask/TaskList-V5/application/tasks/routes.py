@@ -8,7 +8,7 @@ from application.tasks.models import Task
 
 
 ## Initilising the tasks blueprint / Registering the Blueprint
-tasks = Blueprint('tasks_bp', __name__ ,
+tasks = Blueprint('tasks', __name__ ,
     template_folder='templates',
     static_folder='static',
     url_prefix='tasks')

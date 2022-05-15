@@ -1,0 +1,87 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+<title>Socks</title>
+{% endblock %}
+
+{% block title %}
+Sock Market
+{% endblock %}
+
+
+{% block body %}
+<div class="container">
+	<div class="row pb-5">
+		<div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+		<h1 class="pt-5 pb-2">Add a New Sock</h1>
+
+		{% if message %}
+
+			<!-- the form was submitted and message exists -->
+			<p class="lead"><strong>{{ message }}</strong></p>
+
+			<!-- links -->
+			<p><a href="{{ url_for('add_record') }}">Submit another sock.</a></p>
+
+			<p><a href="{{ url_for('index') }}">Return to the index.</a></p>
+
+		{% else %}
+
+			<!-- the form is displayed when template opens via GET not POST -->
+
+			<p class="lead alert alert-primary">Add a new sock to our inventory.</p>
+
+			<p class="ml-4"><a href="{{ url_for('index') }}">Return to the index.</a></p>
+
+			<!-- show flash - based on WTForms validators
+				 see https://pythonprogramming.net/flash-flask-tutorial/
+				 get_flashed_messages() exists here because of flash()
+				 in the route function
+				 -->
+			{% with errors = get_flashed_messages() %}
+				{% if errors %}
+					{% for err in errors %}
+						<div class="alert alert-danger alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">x</span></button>
+						{{ err }}
+						</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+			<!-- end of flash -->
+
+			<!-- the form, thanks to WTForms -->
+            <div class="form">
+                <form action="/socks/add_record" method="POST" novalidate>
+                    {{ form1.hidden_tag() }}
+                    <p>
+                        {{ form1.name.label }}<br>
+                        {{ form1.name(size=32) }}
+                    </p>
+                    <p>
+                        {{ form1.style.label }}<br>
+                        {{ form1.style }}
+                    </p>
+                    <p>
+                        {{ form1.color.label }}<br>
+                        {{ form1.color(size=32) }}
+                    </p>
+                    <p>
+                        {{ form1.quantity.label }}<br>
+                        {{ form1.quantity(size=32) }}
+                    </p>
+                    <p>
+                        {{ form1.price.label }}<br>
+                        {{ form1.price(size=32) }}
+                    </p>
+                    <p>{{ form1.submit() }}</p>
+                </form>
+            </div>
+
+		{% endif %}
+
+		</div>
+	</div>
+</div>
+{% endblock %}
