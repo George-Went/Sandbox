@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  # Each service is a docker container
+  db:
+    restart: always
+    image: postgres:13.0-alpine
+    environment:
+      - POSTGRES_USER=postgres  # default user is postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres # default database is the name of the user (so postgres in this case)
+    ports:
+      - 5432:5432
+    volumes:
+      # File that the database data will be stored in on the local system 
+      # copys sql script from "create_tables.sql"
+      # - ./create_table.sql:/docker-entrypoint-initdb.d/create_tables.sql 
+      # copy the sql script to create tables
+      # - ./fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
+      # - ./postgres-data:/var/lib/postgresql/data
+
+
+  # Each service is a docker container
+  app: 
+    # What is the docker container building
+    build: ./flask-app
+    # [mounts/imports] directories from your computer into the specified container directories 
+    volumes: 
+      - ./flask-app:/app
+    # external : internal port 
+    # external = other machines on a network
+    # internal = other containers within the same docker network 
+    ports:
+      - "5000:5000"
+
+

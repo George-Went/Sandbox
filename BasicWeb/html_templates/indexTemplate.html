@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- defienes character types  -->
+    <title>Title</title>
+    <!-- Specifices a title for a document-->
+    <link rel="stylesheet" href="main.css" />
+    <!-- link to the css stylesheet-->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="content">
+      <div class="card">
+        <!-- <img src="img_avatar.png" alt="Avatar" style="width:100%"> -->
+
+        <div class="container">
+          <h3>Card I</h3>
+          <h4><b>John Doe</b></h4>
+          <p>Architect & Engineer</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <!-- <img src="img_avatar.png" alt="Avatar" style="width:100%"> -->
+        <h3>Display Time</h3>
+        <button type="button" class="button" onclick="getTime()">
+          Click me to display Date and Time.
+        </button>
+        <p id="timeDemo">test</p>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  function getTime() {
+    document.getElementById("timeDemo").innerHTML = Date();
+  }
+</script>

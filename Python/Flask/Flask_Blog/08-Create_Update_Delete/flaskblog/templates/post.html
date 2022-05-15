@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block content %}
+        <h1> Recent Posts</h1>
+            <p>Title: {{ post.title }}</p> <!-- posts title from the dictionary  -->
+            <p> {{ post.author }} on {{ post.date_posted }} </p>
+            <p> {{ post.content }}</p>
+{% endblock content %}

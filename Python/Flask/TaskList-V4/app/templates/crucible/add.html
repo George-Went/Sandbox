@@ -1,0 +1,78 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+<title>Task Master</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+	<div class="row pb-5">
+		<div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+		<h1 class="pt-5 pb-2">Add a New Container</h1>
+
+		{% if message %}
+
+			<!-- the form was submitted and message exists -->
+			<p class="lead"><strong>{{ message }}</strong></p>
+
+		{% else %}
+			<!-- add container form -->
+            <div class="form">
+                <form action="/crucible/add" method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+                    <p>
+                        {{ form.name.label }}<br>
+                        {{ form.name(size=32) }}
+                    </p>
+                    <p>
+                        {{ form.image.label }}<br>
+                        {{ form.image(size=32) }}
+                    </p>
+                    <p>
+                        {{ form.command.label }}<br>
+                        {{ form.command(size=32) }}
+                    </p>
+                    <p>
+                        {{ form.entrypoint.label }}<br>
+                        {{ form.entrypoint(size=32) }}
+                    </p>
+                    <p>
+                        {{ form.environment.label }}<br>
+                        {{ form.environment(size=32) }}
+                    </p>
+                    <p>
+                        {{ form.network.label }}<br>
+                        {{ form.network(size=32) }}
+                    </p>
+                    <p>
+                        {{ form.network_mode.label }}<br>
+                        {{ form.network_mode(size=32) }}
+                    </p>
+                    <p>
+                        {{ form.ports.label }}<br>
+                        {{ form.ports(size=32) }}
+                    </p>
+                    <p>
+                        {{ form.restart_policy.label }}<br>
+                        {{ form.restart_policy(size=32) }}
+                    </p>
+                    <p>
+                        {{ form.volumes.label }}<br>
+                        {{ form.volumes(size=32) }}
+                    </p>           
+                    <p>{{ form.submit() }}</p>
+                </form>
+            </div>
+
+		{% endif %}
+        {% if form.name.errors %}
+            <ul class="errors">
+            {% for error in form.name.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+		</div>
+	</div>
+{% endblock %}

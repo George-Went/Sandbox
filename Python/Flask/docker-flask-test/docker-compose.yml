@@ -1,0 +1,18 @@
+# This is the version of the docker file format - not docker itself
+version: "3.9"
+
+services:
+  # Each service is a docker container
+  app: 
+    # What is the docker container building
+    build: ./flask-app
+    # [mounts/imports] directories from your computer into the specified container directories 
+    volumes: 
+      - ./flask-app:/app
+    # external : internal port 
+    # external = other machines on a network
+    # internal = other containers within the same docker network 
+    ports:
+      - "5001:5000"
+
+

@@ -1,0 +1,1 @@
+Project files and examples from the  book "Automate the boring stuff with python (v2)"
