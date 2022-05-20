@@ -49,7 +49,7 @@ print(json.dumps(response.json(), indent=1))
 
 #%%
 print("ADDING CONTAINER ---------------------------------")
-api_url = "http://localhost:5000/api/v1/container"
+api_url = "http://localhost:5000/api/create"
 ## Example Payload with all options
 payload = {
     "name": "ApacheServer",
@@ -290,3 +290,16 @@ print(response)
 print(response.content)
 # %%
 
+print("CREATE CONTAINER ---------------------------------")
+api_url = "http://localhost:5000/crucible/api/create2"
+test_container = {
+    "command": "tail -f /dev/null", 
+    "name": "Test5_Update",
+    "image": "alpine",
+}
+response = requests.post(api_url, json=test_container)
+print(response.content)
+
+
+
+# %%

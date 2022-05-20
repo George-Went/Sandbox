@@ -1,7 +1,7 @@
-import os # allows picture saving
+import os 
 import secrets
-from PIL import Image
-from flask import render_template, flash, redirect, url_for, flash, redirect, request
+from PIL import Image # pillow - allows picture sizing
+from flask import render_template, flash, redirect, url_for, flash, redirect, request, abort
 from wtforms.validators import Email
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm,  PostForm
@@ -112,12 +112,49 @@ def new_post():
         db.session.commit()
         flash("Post has been created", 'success')
         return redirect(url_for('home'))
-    return render_template('create_post.html', title='New Post',form=form)
+    return render_template('create_post.html', title='New Post',form=form, legend='New Post')
 
 @app.route("/post/<int:post_id>")
 def post(post_id):
     post=Post.query.get_or_404(post_id)
     return render_template('post.html', title='post.title', post=post)
 
+@app.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
+def update_post(post_id):
+    post=Post.query.get_or_404(post_id) # get existing post 
+    # User gets 403 error if they aren't current user
+    if post.author != current_user:
+        abort(403)
+    form = PostForm() # Reuse form from new_post
+    # If user submits form
+    if form.validate_on_submit():
+        post.title = form.title.data 
+        post.content = form.content.data
+        db.session.commit()
+        flash("Your post has been updated", 'success')
+        return redirect(url_for('post', post_id=post.id))
+    elif request.method == 'GET':
+        form.title.data = post.title
+        form.content.data = post.content
+    return render_template('create_post.html', title='Update Post', form=form, legend='Update Post')
+
+@app.route("/post/<int:post_id>/delete", methods=['GET', 'POST'])
+def delete_post(post_id):
+    post=Post.query.get_or_404(post_id) # get existing post 
+    # User gets 403 error if they aren't current user
+    if post.author != current_user:
+        abort(403)
+    form = PostForm() # Reuse form from new_post
+    # If user submits form
+    if form.validate_on_submit():
+        post.title = form.title.data 
+        post.content = form.content.data
+        db.session.commit()
+        flash("Your post has been updated", 'success')
+        return redirect(url_for('post', post_id=post.id))
+    elif request.method == 'GET':
+        form.title.data = post.title
+        form.content.data = post.content
+    return render_template('create_post.html', title='Update Post', form=form, legend='Update Post')
 
 

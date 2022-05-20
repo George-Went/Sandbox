@@ -1,4 +1,4 @@
-from application.database import db
+from application.extensions import db
 
 # Containers Model 
 class Container(db.Model):
@@ -17,3 +17,4 @@ class Container(db.Model):
 
     def __repr__(self):
         return f"Post('{self.id}','{self.name}','{self.image}','{self.command}','{self.entrypoint}','{self.environment}','{self.network}','{self.network_mode}','{self.ports}','{self.restart_policy}','{self.volumes}')"
+

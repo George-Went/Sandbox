@@ -3,12 +3,12 @@ from application.extensions import db
 from application.tasks.models import Task
 
 ## -----------------------------------------------------------
-## TASKS Blueprint : Found under "/tasks"
+## THINGS Blueprint : Found under "/things"
 ## -----------------------------------------------------------
 
 
 ## Initilising the tasks blueprint / Registering the Blueprint
-tasks = Blueprint('tasks', __name__ ,
+things = Blueprint('things', __name__ ,
     template_folder='templates',
     static_folder='static',
     url_prefix='tasks')

@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+
+{% block body %}
+  <div class="content">
+
+    {% for message in get_flashed_messages() %}
+      <div class="alert alert-warning">
+        <button
+          type="button"
+          class="close"
+          data-dismiss="alert">
+            x
+          </button>
+        {{ message }}
+      </div>
+    {% endfor %}
+
+    <h1>You Are</h1>
+    Name: {{ current_user.name }}
+    <br>
+    Email: {{ current_user.email }}
+      <br>
+    <a href="{{ url_for('auth.login') }}">Back</a>
+  </div>
+
+{% endblock %}

@@ -50,9 +50,9 @@
                 <td>{{ x.restart_policy }}</td>
                 <td>{{ x.volumes }}</td>
                 <td>
-                    <a href="/crucible/delete/{{x.id}}">Start</a>
+                    <a href="/crucible/start/{{x.id}}">Start</a>
            
-                    <a href="form/update/{{x.id}}">Stop</a>
+                    <a href="/crucible/stop/{{x.id}}">Stop</a>
             
                     <a href="/crucible/delete/{{x.id}}">Delete</a>
              
@@ -64,7 +64,7 @@
             </tr>
         {% endfor %}
     </table>
-    <a type="button" class="btn btn-primary" href="{{ url_for('crucibleAdd') }}">Add a new Container</a>
+    <a type="button" class="btn btn-primary" href="{{ url_for('crucible.crucibleAdd') }}">Add a new Container</a>
     {% endif %}
 
 

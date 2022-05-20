@@ -99,7 +99,7 @@ containerObject = {
 print("creating a container from an object / dictionary")
 print(containerObject["name"])
 client = docker.from_env()
-container = client.containers.run(**containerObject["image"],containerObject["ports"],detach=containerObject["detach"])
+container = client.containers.run(**containerObject["image"], containerObject["ports"], detach=containerObject["detach"])
 
 
 
