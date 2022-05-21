@@ -1,6 +1,6 @@
 from urllib import response
 from charset_normalizer import detect
-from flask import Blueprint, render_template, request, redirect, flash
+from flask import Blueprint, render_template, request, redirect, flash, url_for
 from httplib2 import Response
 from application.extensions import db
 from application.crucible.models import Container
@@ -24,9 +24,25 @@ crucible = Blueprint('crucible', __name__ ,
 ## List of containers  (WITH WTF FORMS)
 @crucible.route('/', methods=['GET'])
 def crucibleIndex():
-    # Get existing tasks 
-    containers = Container.query.all()
+    # Get existing container database entries 
+    # containers = Container.query.all()
+    # return render_template('crucible/index.html', containers=containers)
+    db_containers = Container.query.all()
+    containers = dockerClient.containers.list(all)
+
+    for db_container in db_containers:
+        container = dockerClient.containers.get(db_container.name)
+        result = {
+            "id": db_container.id,
+            "name": db_container.name,
+            "image": db_container.image
+        }
+
+    
+
     return render_template('crucible/index.html', containers=containers)
+
+
 
 ## Add Container 
 @crucible.route('/add', methods=['GET','POST'])
@@ -74,7 +90,7 @@ def deleteContainer(id):
     except:
         return 'There was a problem deleting that task'
 
-# Start Container
+# Start Container --------------------------------------------------------------
 @crucible.route('/start/<int:id>')
 def startContainer(id):
     # get container
@@ -120,20 +136,23 @@ def startContainer(id):
         ## run the selected container
         new_container.start()
 
+    
     return render_template('crucible/index.html', containers=containers)
 
 
 
-# Stop Container
+# Stop Container@
 @crucible.route('/stop/<int:id>')
 def stopContainer(id):
     # get container
     print("CHECK")
-    containers = Container.query.all()
+    # try: 
+    # containers = Container.query.all()
     db_container = Container.query.get_or_404(id)
 
     flash("stopping container: " + db_container.name)
     print(db_container)
+    containers = Container.query.all()
 
     return render_template('crucible/index.html', containers=containers)
 
