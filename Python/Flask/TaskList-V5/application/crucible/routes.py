@@ -228,6 +228,18 @@ def createContainer(id):
         "command": db_container.command,
         "detach" : True
     }
+    if db_container.command: 
+        containerObject['command'] = db_container.command
+    if db_container.entrypoint: 
+        containerObject['entrypoint'] = db_container.entrypoint  
+    if db_container.environment: 
+        containerObject['environment'] = db_container.environment
+    if db_container.network: 
+        containerObject['network'] = db_container.network
+    if db_container.ports: 
+        containerObject['ports'] = db_container.ports
+    if db_container.volumes: 
+        containerObject['volumes'] = db_container.volumes
 
     try:
         dockerClient.containers.create(**containerObject)
