@@ -1,13 +1,16 @@
+from distutils.log import error
+from http import client
 from urllib import response
 from charset_normalizer import detect
-from flask import Blueprint, render_template, request, redirect, flash, url_for
+from flask import Blueprint, render_template, request, redirect, flash, url_for, abort, jsonify
 from httplib2 import Response
 from application.extensions import db
 from application.crucible.models import Container
 from application.crucible.forms import ContainerForm
 
-from os import name
+from os import environ, name
 import docker
+import docker.errors as errors
 dockerClient = docker.from_env()
 
 
@@ -21,30 +24,165 @@ crucible = Blueprint('crucible', __name__ ,
     static_folder='static',
     url_prefix='crucible')
 
-## List of containers  (WITH WTF FORMS)
+
+## List of containers in database ---------------------------------------------------
 @crucible.route('/', methods=['GET'])
 def crucibleIndex():
     # Get existing container database entries 
-    # containers = Container.query.all()
-    # return render_template('crucible/index.html', containers=containers)
-    db_containers = Container.query.all()
-    containers = dockerClient.containers.list(all)
+    db_container_list = Container.query.all()
 
-    for db_container in db_containers:
-        container = dockerClient.containers.get(db_container.name)
-        result = {
-            "id": db_container.id,
-            "name": db_container.name,
-            "image": db_container.image
-        }
+    container = []
+    for db_container in db_container_list:
+        try:
+            client_container = dockerClient.containers.get(db_container.name)
+            container.append(
+                {
+                    "id": db_container.id,
+                    "name": db_container.name,
+                    "image": db_container.image,
+                    "ports": db_container.ports,
+                    "status": client_container.status
+                }
+            )
+        except:
+            # if container is not in docker
+            container.append(
+                {
+                    "id": db_container.id,
+                    "name": db_container.name,
+                    "image": db_container.image,
+                    "ports": db_container.ports,
+                    "status": "not in docker"
+                }
+            )
+            print(container)
+    return render_template('crucible/index.html', containers=container)
 
+## List all docker containers on client system --------------------------------------------------------------------------
+@crucible.route('/all', methods=['GET'])
+def crucibleIndexAll():
+    # Get existing container database entries 
+    db_container_list = Container.query.all()
+    docker_container_list = dockerClient.containers.list(all=True)
+    container = []
+    for db_container in docker_container_list:
+        try:
+            client_container = dockerClient.containers.get(db_container.name)
+            container.append(
+                {
+                    "id": db_container.short_id,
+                    "name": db_container.name,
+                    "image": db_container.image,
+                    "ports": db_container.ports,
+                    "status": client_container.status
+                }
+            )
+        except:
+            # if container is not in docker
+            container.append(
+                {
+                    "id": db_container.id,
+                    "name": db_container.name,
+                    "image": db_container.image,
+                    "ports": db_container.ports,
+                    "status": "not in docker"
+                }
+            )
+            print(container)
+    return render_template('crucible/index.html', containers=container)
+
+
+## List all docker images --------------------------------------------------------------------------
+@crucible.route('/images', methods=['GET'])
+def crucibleImagesAll():
+    # Get existing container database entries 
+    docker_image_list = dockerClient.images.list(all=True)
+    images = []
+    print(docker_image_list)
+    for image in docker_image_list:
+        images.append(
+            {
+                "id": image.id,
+                "tags": image.tags
+            }
+        )
+    print(images)
+    return render_template('crucible/images.html', images=images)
+
+
+## List Induvidual containers -------------------------------------------------
+## Gets a containers infomation based on database not docker infomation 
+# if the contianer is in docker 
+@crucible.route('/<int:id>', methods=['GET'])
+def singleContainer(id):
+
+    db_container = Container.query.get_or_404(id)
+    print(db_container)
+
+    container = []
+    try:
+        client_container = dockerClient.containers.get(db_container.name)
+        container.append(
+            {
+                "id": db_container.id,
+                "name": db_container.name,
+                "image": db_container.image,
+                "ports": db_container.ports,
+                "entrypoint": db_container.entrypoint,
+                "environment": db_container.environment,
+                "network": db_container.network,
+                "network_mode": db_container.network_mode,
+                "restart_policy": db_container.restart_policy,
+                "volumes": db_container.volumes,
+                "status": client_container.status
+            }
+        )
+    except errors.APIError as error: 
+        print(error)
+        container.append(
+            {
+                "id": db_container.id,
+                "name": db_container.name,
+                "image": db_container.image,
+                "ports": db_container.ports,
+                "entrypoint": db_container.entrypoint,
+                "environment": db_container.environment,
+                "network": db_container.network,
+                "network_mode": db_container.network_mode,
+                "restart_policy": db_container.restart_policy,
+                "volumes": db_container.volumes,
+                "status": "not in docker"
+            }
+        )
+        print(container)
+    except: 
+        # if container is not in docker
+        container.append(
+            {
+                "id": db_container.id,
+                "name": db_container.name,
+                "image": db_container.image,
+                "ports": db_container.ports,
+                "entrypoint": db_container.entrypoint,
+                "environment": db_container.environment,
+                "network": db_container.network,
+                "network_mode": db_container.network_mode,
+                "restart_policy": db_container.restart_policy,
+                "volumes": db_container.volumes,
+                "status": "not in docker"
+            }
+        )
+        print(container)
     
-
-    return render_template('crucible/index.html', containers=containers)
-
+    return render_template('crucible/singleContainer.html', containers=container)
 
 
-## Add Container 
+
+## ----------------------------------------------------------------------
+## Creating Stuff
+## ----------------------------------------------------------------------
+
+## Add Container to Database -----------------------------------------------
 @crucible.route('/add', methods=['GET','POST'])
 def crucibleAdd():
     form = ContainerForm() # pass in our WTForm
@@ -71,11 +209,68 @@ def crucibleAdd():
         db.session.add(new_container) 
         db.session.commit() # commit the changes made to thze database 
         
-        flash('Task added {}'.format(form.name.data))
-        return redirect('/') 
+        flash('Container added {}'.format(form.name.data))
+        return redirect('/crucible/') 
 
     # Get existing tasks 
-    return render_template('crucible/add.html', form=form)
+    return render_template('crucible/add.html', form=form) 
+
+
+# Create Container in docker client
+@crucible.route('/create/<int:id>')
+def createContainer(id):
+
+    db_container = Container.query.get_or_404(id)
+    print(db_container)
+    containerObject = {
+        "image": db_container.image,
+        "name": db_container.name,
+        "command": db_container.command,
+        "detach" : True
+    }
+
+    try:
+        dockerClient.containers.create(**containerObject)
+        flash("creating container: " + db_container.name)
+    except Exception as error:     
+        flash("Failed to create " + str(db_container.name) + "Error: " + str(error))
+        
+    return redirect('/crucible')
+
+
+
+
+# Start Container 
+@crucible.route('/start/<int:id>')
+def startContainer(id):
+
+    db_container = Container.query.get_or_404(id)
+    print(db_container)
+
+    try:
+        container = dockerClient.containers.get(db_container.name)
+        container.start()
+        flash("starting container: " + db_container.name)
+    except Exception as error:     
+        flash("Failed to start " + str(db_container.name) + "Error: " + str(error))
+        
+    return redirect('/crucible')
+
+
+# Stop Container 
+@crucible.route('/stop/<int:id>')
+def stopContainer(id):
+    db_container = Container.query.get_or_404(id)
+
+    try:
+        container = dockerClient.containers.get(db_container.name)
+        container.stop()
+        flash("stopping container: " + db_container.name)
+    except Exception as error:     
+        flash("Failed to stop " + str(db_container.name) + "Error: " + str(error))
+        
+    return redirect('/crucible')
+
 
 
 ## Remove Container 
@@ -86,184 +281,10 @@ def deleteContainer(id):
     try:
         db.session.delete(container_to_delete)
         db.session.commit()
-        return redirect('/')
-    except:
-        return 'There was a problem deleting that task'
+        return redirect('/crucible')
+    except Exception as error:     
+        flash("Failed to stop " + str(container_to_delete) + "Error: " + str(error))
 
-# Start Container --------------------------------------------------------------
-@crucible.route('/start/<int:id>')
-def startContainer(id):
-    # get container
-    print("CHECK")
-    containers = Container.query.all()
-    db_container = Container.query.get_or_404(id)
-
-    
-    print(db_container)
-
-    try:
-        # If the container exists in the client 
-        container = dockerClient.containers.get(db_container.name)
-        container.start()
-        flash("starting container: " + db_container.name)
-    except:
-        flash("Creating a lcoal container called: " + db_container.name)
-
-        containerObject = {                    
-            "image": db_container.image,
-            "name": db_container.name,
-            "detach": True
-        }
-        if db_container.command: 
-            containerObject['command'] = db_container.command
-        if db_container.entrypoint: 
-            containerObject['entrypoint'] = db_container.entrypoint  
-        if db_container.environment: 
-            containerObject['environment'] = db_container.environment
-        if db_container.network: 
-            containerObject['network'] = db_container.network
-        if db_container.ports: 
-            containerObject['ports'] = {'8080/tcp': 8080, '8443/tcp':8443}
-        if db_container.volumes: 
-            containerObject['volumes'] = db_container.volumes
+    return redirect('/crucible')
 
 
-        print(containerObject)
-        ## create the container 
-        dockerClient.containers.create(**containerObject) # needs "**" to start keyword arguments
-        ## get (select) the new container
-        new_container = dockerClient.containers.get(containerObject['name'])
-        ## run the selected container
-        new_container.start()
-
-    
-    return render_template('crucible/index.html', containers=containers)
-
-
-
-# Stop Container@
-@crucible.route('/stop/<int:id>')
-def stopContainer(id):
-    # get container
-    print("CHECK")
-    # try: 
-    # containers = Container.query.all()
-    db_container = Container.query.get_or_404(id)
-
-    flash("stopping container: " + db_container.name)
-    print(db_container)
-    containers = Container.query.all()
-
-    return render_template('crucible/index.html', containers=containers)
-
-
-
-
-
-
-
-
-
-## ------------------------------------------------------------------------------------------- 
-## Docker API Interaction
-## -------------------------------------------------------------------------------------------
-
-
-# List Local Containers
-@crucible.route('/api/list', methods=['GET','POST'])
-def listContainers():
-    print("Container List")
-  
-    result = []
-    for container in dockerClient.containers.list(all=True):
-        result.append(
-            {
-                "id": container.id,
-                "name": container.name,
-                "image": container.image,
-                "status": container.status
-            }
-        )
-    return render_template('crucible/api.html', result = result)
-
-## Test Functions
-
-# Create Local Container
-@crucible.route('/api/create', methods=['GET','POST'])
-def createContainer():
-    
-    containerObject = {
-        "image": "bfirsh/reticulate-splines",
-        "name": "docker_from_object",
-        "ports": {'8080/tcp': 8080, '8443/tcp':8443},
-        "detach": True
-    }
-    print(containerObject)
-    dockerClient.containers.create(**containerObject) # needs "**" to start keyword arguments
-    # container = client.containers.run("bfirsh/reticulate-splines",name='docker_from_run', ports={'8080/tcp': 8080}, detach=True)
-    # container = client.containers.run(**containerObject)
-
-    text = "creating contianer: " + containerObject["name"]
-    return render_template('crucible/api.html', result = text)
-
-# Create local container from API payload 
-@crucible.route('/api/create/<int:id>', methods=['GET','POST'])
-def createContainer2(id):
-    payload = request.json
-    print(payload)
-
-
-
-    containerObject = {
-        "image": payload["image"],
-        "name": payload["name"],
-        "command": payload["command"],
-        "detach": True
-    }
-    dockerClient.containers.create(**containerObject)
-
-
-    response = containerObject
-    
-    return response
-
-# Start Local Container
-@crucible.route('/api/start', methods=['GET','POST'])
-def startContainerAPI():
-    containerObject = {
-        "image": "bfirsh/reticulate-splines",
-        "name": "docker_from_object",
-        "ports": {'8080/tcp': 8080, '8443/tcp':8443},
-        "detach": True
-    }
-
-    container = dockerClient.containers.get(containerObject['name'])
-    container.start()
-
-    text = "starting container: " + containerObject["name"]
-
-    return render_template('crucible/api.html', result = text)
-
-# Stop Local Container 
-@crucible.route('/api/stop', methods=['GET','POST'])
-def stopContainerAPI():
-
-    containerObject = {
-        "image": "bfirsh/reticulate-splines",
-        "name": "docker_from_object",
-        "ports": {'8080/tcp': 8080, '8443/tcp':8443},
-        "detach": True
-    }
-
-    container = dockerClient.containers.get(containerObject['name'])
-    container.stop()
-
-    text = "stopping contianer: " + containerObject["name"]
-    # client.containers.run(**containerObject)
-    # for container in client.containers.list():
-    #     if container.name == name:
-    #         container.stop()
-
-    return render_template('crucible/api.html', result = text)
-
-# Stop container based on payload

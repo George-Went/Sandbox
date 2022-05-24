@@ -20,10 +20,10 @@
 
 
     <h1 style="text-align: center">Container List</h1>
-    {% if containers|length < 1 %}
+    <!-- {% if images|length < 1 %}
     <h4 style="text-align: center">There are no containers</h4>
     <a href="/crucible/add">Add Container</a>
-    {% else %}
+    {% else %} -->
     <nav class="navbar navbar-expand-lg">      
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
@@ -43,47 +43,18 @@
 
     <table style="margin: auto;" class="table table-striped">
         <tr>
-            <th>Container ID</th>
-            <th>Name</th>
-            <th>Image</th>
-            <th>Status</th>
-            <th>Ports</th>
-            <th></th>
-            <th></th>
+            <th>Image ID</th>
+            <th>Labels</th>
         </tr>
-        {% for x in containers %}
+        {% for x in images %}
             <tr>
                 <td>{{ x.id }}</td>
-                <td>{{ x.name }}</td>
-                <td>{{ x.image }}</td>
-                <td>{{ x.status }}</td>
-                <td>{{ x.ports }}</td>
+                <td>{{ x.tags }}</td>
                 
-                <!-- <td>{{ x.entrypoint }}</td>
-                <td>{{ x.environment }}</td>
-                <td>{{ x.network }}</td>
-                <td>{{ x.network_mode }}</td>
-                
-                <td>{{ x.restart_policy }}</td>
-                <td>{{ x.volumes }}</td> -->
-                <td>
-                    <a href="/crucible/create/{{x.id}}">Create</a> |
-
-                    <a href="/crucible/start/{{x.id}}">Start</a> |
-           
-                    <a href="/crucible/stop/{{x.id}}">Stop</a> | 
-            
-                    <a href="/crucible/delete/{{x.id}}">Delete</a> |
-             
-                    <a href="form/update/{{x.id}}">Update</a> |
-                </td>
-                <td>
-                    <a href="/crucible/{{x.id}}">View More</button>
-                </td>
             </tr>
         {% endfor %}
     </table>
-    <a type="button" class="btn btn-primary" href="{{ url_for('crucible.crucibleAdd') }}">Add a new Container</a>
+    <a type="button" class="btn btn-primary" href="{{ url_for('crucible.crucibleAdd') }}">Add a new Image</a>
     {% endif %}
 
 
