@@ -38,8 +38,6 @@ def crucibleIndex():
             "image": db_container.image
         }
 
-    
-
     return render_template('crucible/index.html', containers=containers)
 
 
@@ -212,8 +210,6 @@ def createContainer2(id):
     payload = request.json
     print(payload)
 
-
-
     containerObject = {
         "image": payload["image"],
         "name": payload["name"],
@@ -221,7 +217,6 @@ def createContainer2(id):
         "detach": True
     }
     dockerClient.containers.create(**containerObject)
-
 
     response = containerObject
     
