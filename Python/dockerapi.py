@@ -196,3 +196,155 @@ container = client.containers.run(containerObject["image"],containerObject["port
 # %%
 
 # %%
+
+
+
+## Flask stuff
+
+
+
+
+
+
+## ------------------------------------------------------------------------------------------- 
+## Docker API Interaction
+## -------------------------------------------------------------------------------------------
+
+
+# List Local Containers
+@crucible.route('/api/list', methods=['GET','POST'])
+def listContainers():
+    print("Container List")
+  
+    result = []
+    for container in dockerClient.containers.list(all=True):
+        result.append(
+            {
+                "id": container.id,
+                "name": container.name,
+                "image": container.image,
+                "status": container.status
+            }
+        )
+    return render_template('crucible/api.html', result = result)
+
+## Test Functions
+
+# Create Local Container
+@crucible.route('/api/create', methods=['POST'])
+def createContainerAPI():
+
+
+    print("got request")
+    if request.method == 'POST':
+        try:
+            payload = request.get_json() 
+            dockerClient.containers.create(**payload)
+            response = {
+                    "status": 200, 
+                    "message": "container :" + payload["name"] + " is being created"
+                }
+            print(response)
+            return response
+        # Error handeling for the docker API
+        except errors.APIError as error:
+            response = {
+                    "status": 400, 
+                    "message": "container " + payload["name"] +" was not created",
+                    "error": str(error)
+                }
+            print(response)
+            return response
+    
+
+
+# Start Local Container
+@crucible.route('/api/start', methods=['POST'])
+def startContainer2():
+    
+    print("got request")
+    if request.method == 'POST':
+        try:
+            payload = request.get_json() 
+            container = dockerClient.containers.get(payload['name'])
+            container.start()
+
+            response = {
+                    "status": 200, 
+                    "message": "container :" + payload["name"] + " is starting"
+                }
+            print(response)
+            return response
+        # Error handeling for the docker API
+        except errors.APIError as error:
+            response = {
+                    "status": 400, 
+                    "message": "container was not created",
+                    "error": str(error)
+                }
+            print(response)
+            return response
+    
+
+
+# Create local container from API payload 
+@crucible.route('/api/create/<int:id>', methods=['GET','POST'])
+def createContainer2(id):
+    payload = request.json
+    print(payload)
+
+
+
+    containerObject = {
+        "image": payload["image"],
+        "name": payload["name"],
+        "command": payload["command"],
+        "detach": True
+    }
+    dockerClient.containers.create(**containerObject)
+
+
+    response = containerObject
+    
+    return response
+
+# Start Local Container
+@crucible.route('/api/start', methods=['GET','POST'])
+def startContainerAPI():
+    containerObject = {
+        "image": "bfirsh/reticulate-splines",
+        "name": "docker_from_object",
+        "ports": {'8080/tcp': 8080, '8443/tcp':8443},
+        "detach": True
+    }
+
+    container = dockerClient.containers.get(containerObject['name'])
+    container.start()
+
+    text = "starting container: " + containerObject["name"]
+
+    return render_template('crucible/api.html', result = text)
+
+# Stop Local Container 
+@crucible.route('/api/stop', methods=['GET','POST'])
+def stopContainerAPI():
+
+    containerObject = {
+        "image": "bfirsh/reticulate-splines",
+        "name": "docker_from_object",
+        "ports": {'8080/tcp': 8080, '8443/tcp':8443},
+        "detach": True
+    }
+
+    container = dockerClient.containers.get(containerObject['name'])
+    container.stop()
+
+    text = "stopping contianer: " + containerObject["name"]
+    # client.containers.run(**containerObject)
+    # for container in client.containers.list():
+    #     if container.name == name:
+    #         container.stop()
+
+    return render_template('crucible/api.html', result = text)
+
+# Stop container based on payload

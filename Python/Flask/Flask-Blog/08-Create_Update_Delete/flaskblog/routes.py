@@ -16,7 +16,8 @@ def root():
 
 @app.route("/home")  # Root page of the website
 def home():
-    posts = Post.query.all()
+
+    posts = Post.query.paginate(per_page=5)
     return render_template("home.html", posts=posts)
 
 

@@ -291,15 +291,23 @@ print(response.content)
 # %%
 
 print("CREATE CONTAINER ---------------------------------")
-api_url = "http://localhost:5000/crucible/api/create2"
+api_url = "http://localhost:5000/crucible/api/create"
 test_container = {
     "command": "tail -f /dev/null", 
-    "name": "Test5_Update",
+    "name": "Test7",
     "image": "alpine",
 }
 response = requests.post(api_url, json=test_container)
 print(response.content)
 
-
+print("START CONTAINER ---------------------------------")
+api_url = "http://localhost:5000/crucible/api/start"
+test_container = {
+    "command": "tail -f /dev/null", 
+    "name": "Test7",
+    "image": "alpine",
+}
+response = requests.post(api_url, json=test_container)
+print(response.content)
 
 # %%
