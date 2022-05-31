@@ -110,6 +110,9 @@ def crucibleImagesAll():
     return render_template('crucible/images.html', images=images)
 
 
+<<<<<<< HEAD
+    return render_template('crucible/index.html', containers=containers)
+=======
 ## List Induvidual containers -------------------------------------------------
 ## Gets a containers infomation based on database not docker infomation 
 # if the contianer is in docker 
@@ -176,6 +179,7 @@ def singleContainer(id):
     
     return render_template('crucible/singleContainer.html', containers=container)
 
+>>>>>>> c3a9b7e7f2114831e82d8097b14df802eb28d807
 
 
 ## ----------------------------------------------------------------------
@@ -309,6 +313,96 @@ def startContainer(id):
 def stopContainer(id):
     db_container = Container.query.get_or_404(id)
 
+<<<<<<< HEAD
+    flash("stopping container: " + db_container.name)
+    print(db_container)
+    containers = Container.query.all()
+
+    return render_template('crucible/index.html', containers=containers)
+
+
+
+
+
+
+
+
+
+## ------------------------------------------------------------------------------------------- 
+## Docker API Interaction
+## -------------------------------------------------------------------------------------------
+
+
+# List Local Containers
+@crucible.route('/api/list', methods=['GET','POST'])
+def listContainers():
+    print("Container List")
+  
+    result = []
+    for container in dockerClient.containers.list(all=True):
+        result.append(
+            {
+                "id": container.id,
+                "name": container.name,
+                "image": container.image,
+                "status": container.status
+            }
+        )
+    return render_template('crucible/api.html', result = result)
+
+## Test Functions
+
+# Create Local Container
+@crucible.route('/api/create', methods=['GET','POST'])
+def createContainer():
+    
+    containerObject = {
+        "image": "bfirsh/reticulate-splines",
+        "name": "docker_from_object",
+        "ports": {'8080/tcp': 8080, '8443/tcp':8443},
+        "detach": True
+    }
+    print(containerObject)
+    dockerClient.containers.create(**containerObject) # needs "**" to start keyword arguments
+    # container = client.containers.run("bfirsh/reticulate-splines",name='docker_from_run', ports={'8080/tcp': 8080}, detach=True)
+    # container = client.containers.run(**containerObject)
+
+    text = "creating contianer: " + containerObject["name"]
+    return render_template('crucible/api.html', result = text)
+
+# Create local container from API payload 
+@crucible.route('/api/create/<int:id>', methods=['GET','POST'])
+def createContainer2(id):
+    payload = request.json
+    print(payload)
+
+    containerObject = {
+        "image": payload["image"],
+        "name": payload["name"],
+        "command": payload["command"],
+        "detach": True
+    }
+    dockerClient.containers.create(**containerObject)
+
+    response = containerObject
+    
+    return response
+
+# Start Local Container
+@crucible.route('/api/start', methods=['GET','POST'])
+def startContainerAPI():
+    containerObject = {
+        "image": "bfirsh/reticulate-splines",
+        "name": "docker_from_object",
+        "ports": {'8080/tcp': 8080, '8443/tcp':8443},
+        "detach": True
+    }
+
+    container = dockerClient.containers.get(containerObject['name'])
+    container.start()
+
+    text = "starting container: " + containerObject["name"]
+=======
     try:
         container = dockerClient.containers.get(db_container.name)
         container.stop()
@@ -317,6 +411,7 @@ def stopContainer(id):
         flash("Failed to stop " + str(db_container.name) + "Error: " + str(error))
         
     return redirect('/crucible')
+>>>>>>> c3a9b7e7f2114831e82d8097b14df802eb28d807
 
 ## Remove Container 
 @crucible.route('/delete/<int:id>')

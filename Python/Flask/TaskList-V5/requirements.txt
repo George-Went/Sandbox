@@ -1,0 +1,10 @@
+
+Flask
+Flask-Bcrypt
+Flask-Login
+Flask-SQLAlchemy
+itsdangerous
+Jinja2
+oauthlib
+SQLAlchemy
+Werkzeug
