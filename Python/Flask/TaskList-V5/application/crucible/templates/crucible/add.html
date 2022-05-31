@@ -19,7 +19,7 @@
 		{% else %}
 			<!-- add container form -->
             <div class="form">
-                <form action="/crucible/add" method="POST" novalidate>
+                <form action="/crucible/add2" method="POST" novalidate>
                     {{ form.hidden_tag() }}
                     <p>
                         {{ form.name.label }}<br>
@@ -50,8 +50,12 @@
                         {{ form.network_mode(size=32) }}
                     </p>
                     <p>
-                        {{ form.ports.label }}<br>
-                        {{ form.ports(size=32) }}
+                        {{ form.internal_port.label }}<br>
+                        {{ form.internal_port(size=32) }}
+                    </p>
+                    <p>
+                        {{ form.external_port.label }}<br>
+                        {{ form.external_port(size=32) }}
                     </p>
                     <p>
                         {{ form.restart_policy.label }}<br>

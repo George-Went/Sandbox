@@ -6,7 +6,7 @@ from flask import Blueprint, render_template, request, redirect, flash, url_for,
 from httplib2 import Response
 from application.extensions import db
 from application.crucible.models import Container
-from application.crucible.forms import ContainerForm
+from application.crucible.forms import ContainerForm, ContainerFormPorts
 
 from os import environ, name
 import docker
@@ -215,6 +215,45 @@ def crucibleAdd():
     # Get existing tasks 
     return render_template('crucible/add.html', form=form) 
 
+## test to see if i can have external and interal port settings on the form
+@crucible.route('/add2', methods=['GET','POST'])
+def crucibleAdd2():
+    form = ContainerFormPorts() # pass in our WTForm
+       
+    if form.validate_on_submit():
+        # bind form results to the database model
+        # database entry = Model(varaible = form data)
+        # Example Port: [{"54332/tcp":"5432"}]
+        internal_port = form.internal_port.data
+        external_port = form.external_port.data
+        ports = '[{"' + external_port + '/tcp":"' + internal_port + '"}]'
+        print(internal_port)
+        print(external_port)
+        print(ports)
+        # new_container = Container(
+        #     name = form.name.data,
+        #     image = form.image.data,
+        #     command = form.command.data,
+        #     entrypoint = form.entrypoint.data,
+        #     environment = form.environment.data,
+        #     network = form.network.data,
+        #     network_mode = form.network_mode.data,
+        #     ports = 
+        #     restart_policy = form.restart_policy.data,
+        #     volumes = form.volumes.data
+        # ) 
+    
+        # print(new_container)
+        
+        # add the "new_container" object to the database 
+        # db.session.add(new_container) 
+        # db.session.commit() # commit the changes made to thze database 
+        
+        flash('Container added {}'.format(form.name.data))
+        return redirect('/crucible/') 
+
+    # Get existing tasks 
+    return render_template('crucible/add.html', form=form) 
 
 # Create Container in docker client
 @crucible.route('/create/<int:id>')
@@ -249,9 +288,6 @@ def createContainer(id):
         
     return redirect('/crucible')
 
-
-
-
 # Start Container 
 @crucible.route('/start/<int:id>')
 def startContainer(id):
@@ -268,7 +304,6 @@ def startContainer(id):
         
     return redirect('/crucible')
 
-
 # Stop Container 
 @crucible.route('/stop/<int:id>')
 def stopContainer(id):
@@ -282,8 +317,6 @@ def stopContainer(id):
         flash("Failed to stop " + str(db_container.name) + "Error: " + str(error))
         
     return redirect('/crucible')
-
-
 
 ## Remove Container 
 @crucible.route('/delete/<int:id>')
@@ -300,3 +333,44 @@ def deleteContainer(id):
     return redirect('/crucible')
 
 
+
+## ----------------------------------------------------------------------
+## Dumping data into the system on startup 
+## ----------------------------------------------------------------------
+@crucible.route('/dump',methods=['GET'])
+def dumpData():
+    
+    database = Container(
+        name = "hive_metrics_db",
+        image = 'post',
+        command = "hive_metrics_db psql -U postgres -c 'CREATE DATABASE cervus_hive'",
+        entrypoint = "entrypoint.sh",
+        environment = "POSTGRES_PASSWORD=hivedemo",
+        network = "hive",
+        network_mode = "form.network_mode.data",
+        ports = "[{'54332/tcp':'5432'}]",
+        restart_policy = "Always",
+        volumes = "hive_metrics_db_13:/var/lib/postgresql/data",
+    ) 
+    db.session.add(database)
+    db.session.commit()
+
+
+# homer = User(name="Homer")
+# marge = User(name="Marge")
+
+# netflix = Channel(name="Netflix")
+# appleTV = Channel(name="AppleTV")
+
+# ## add an example post 
+# db.session.add_all([homer, marge, netflix, appleTV])
+
+# # commit to the database
+
+
+# ## linking the many to many relationship 
+# ## we can append a database - to "add onto the end" of the user
+# homer.following.append(netflix)
+# homer.following.append(netflix)
+# homer.following.append(netflix)
+# db.session.commit()
