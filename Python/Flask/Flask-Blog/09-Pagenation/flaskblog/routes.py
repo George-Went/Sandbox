@@ -16,9 +16,9 @@ def root():
 
 @app.route("/home")  # Root page of the website
 def home():
-
-    # posts = Post.query.paginate(per_page=5)
-    posts = Post.query.all()
+    page = request.args.get('page', 1, type=int) # Get the page number from the pagenation funciton in the model 
+    posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=4) # We can query for a specific order(date by) and the amount of results per page
+    # posts = Post.query.all()
     return render_template("home.html", posts=posts)
 
 
@@ -159,4 +159,15 @@ def delete_post(post_id):
         form.content.data = post.content
     return render_template('create_post.html', title='Update Post', form=form, legend='Update Post')
 
-
+## Showing posts by a specific user
+@app.route("/user/<string:username>")  # Root page of the website
+def user_posts(username):
+    page = request.args.get('page', 1, type=int) # Get the page number from the pagenation funciton in the model 
+    user = User.query.filter_by(username=username).first_or_404() # get the first user, or a 404 if the user does not exist
+    
+    posts = Post.query.filter_by(author=user)\
+    .order_by(Post.date_posted.desc())\
+    .paginate(page=page, per_page=4) # We can query for a specific order(date by) and the amount of results per page
+    # You can use \ to split line into multiple lines 
+    # posts = Post.query.all()
+    return render_template("user_posts.html", posts=posts, user=user)
