@@ -1,6 +1,7 @@
 from datetime import datetime
-from flaskblog import db, login_manager
+from flaskblog import db, login_manager, app
 from flask_login import UserMixin
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer # allows us to generate tokens that last 30 seconds 
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -14,6 +15,19 @@ class User(db.Model, UserMixin):  # we can import UserMixin from the flask-login
     image_file = db.Column(db.String(20), nullable=False, default="default.jpg")  # default value
     password = db.Column(db.String(60), nullable=False)
     posts = db.relationship("Post", backref="author", lazy=True)  # the lazy argument means that sql aclehmy will load the data from the db one object at a time
+
+    def get_reset_token(self, expires_sec=1800):
+        s = Serializer(app.config['SECRET_KEY'], expires_sec) # generate token
+        return s.dumps({'user_id': self.id}).decode('utf_8')
+
+    @staticmethod 
+    def verify_reset_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try: 
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
 
     def __repr__(self,):  # this is how our object is printed when someone requets the object
         return f"User('{self.username}', '{self.email}'"
